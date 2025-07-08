@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Conexão - UniOvi Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔍 Teste de Conexão - UniOvi Monitor</h1>
+
+    <div class="test-section">
+        <h2>Teste 1: Verificar se a URL alvo está acessível</h2>
+        <button onclick="testDirectAccess()">Testar Acesso Direto</button>
+        <div id="direct-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Teste 2: Testar Proxies CORS</h2>
+        <button onclick="testProxies()">Testar Todos os Proxies</button>
+        <div id="proxy-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Teste 3: Verificar Conteúdo da Página</h2>
+        <button onclick="testContent()">Analisar Conteúdo</button>
+        <div id="content-result"></div>
+    </div>
+
+    <script>
+        const targetUrl = 'https://cei.uniovi.es/postgrado/doctorado/acceso/listas';
+
+        async function testDirectAccess() {
+            const resultDiv = document.getElementById('direct-result');
+            resultDiv.innerHTML = '<div class="result">🔄 Testando acesso direto...</div>';
+
+            try {
+                const response = await fetch(targetUrl);
+                resultDiv.innerHTML = `
+                    <div class="result success">
+                        ✅ Acesso direto funcionou!<br>
+                        Status: ${response.status} ${response.statusText}<br>
+                        Headers: ${response.headers.get('content-type') || 'N/A'}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        ❌ Acesso direto falhou: ${error.message}<br>
+                        <small>Isso é esperado devido às restrições de CORS</small>
+                    </div>
+                `;
+            }
+        }
+
+        async function testProxies() {
+            const resultDiv = document.getElementById('proxy-results');
+            resultDiv.innerHTML = '<div class="result">🔄 Testando proxies...</div>';
+
+            const proxies = [
+                { name: 'AllOrigins', url: `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}` },
+                { name: 'CORS Anywhere', url: `https://cors-anywhere.herokuapp.com/${targetUrl}` },
+                { name: 'CodeTabs', url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}` }
+            ];
+
+            let results = '';
+
+            for (const proxy of proxies) {
+                try {
+                    console.log(`Testando ${proxy.name}: ${proxy.url}`);
+                    const response = await fetch(proxy.url);
+
+                    if (response.ok) {
+                        if (proxy.name === 'AllOrigins') {
+                            const data = await response.json();
+                            if (data.contents) {
+                                results += `<div class="result success">✅ ${proxy.name}: Funcionou! (${data.contents.length} caracteres)</div>`;
+                            } else {
+                                results += `<div class="result error">❌ ${proxy.name}: Sem conteúdo</div>`;
+                            }
+                        } else {
+                            const text = await response.text();
+                            results += `<div class="result success">✅ ${proxy.name}: Funcionou! (${text.length} caracteres)</div>`;
+                        }
+                    } else {
+                        results += `<div class="result error">❌ ${proxy.name}: HTTP ${response.status}</div>`;
+                    }
+                } catch (error) {
+                    results += `<div class="result error">❌ ${proxy.name}: ${error.message}</div>`;
+                }
+            }
+
+            resultDiv.innerHTML = results;
+        }
+
+        async function testContent() {
+            const resultDiv = document.getElementById('content-result');
+            resultDiv.innerHTML = '<div class="result">🔄 Analisando conteúdo...</div>';
+
+            try {
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+                const response = await fetch(proxyUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.contents) {
+                    throw new Error('Sem conteúdo disponível');
+                }
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, 'text/html');
+
+                const programText = 'Programa de Doctorado en Género y Diversidad';
+                const provisionalText = 'Lista provisional de admitidos, en espera y excluidos';
+                const definitiveText = 'Lista definitiva de admitidos , en espera y excluidos';
+
+                const pageContent = doc.body.textContent;
+                const hasProgram = pageContent.includes(programText);
+
+                let analysis = `<div class="result success">✅ Análise concluída!</div>`;
+                analysis += `<div class="result">📊 Programa encontrado: ${hasProgram ? '✅ Sim' : '❌ Não'}</div>`;
+
+                if (hasProgram) {
+                    const allLinks = doc.querySelectorAll('a');
+                    let hasProvisionalLink = false;
+                    let hasDefinitiveLink = false;
+
+                    for (const link of allLinks) {
+                        const linkText = link.textContent.trim();
+                        if (linkText.includes(provisionalText)) hasProvisionalLink = true;
+                        if (linkText.includes(definitiveText)) hasDefinitiveLink = true;
+                    }
+
+                    analysis += `<div class="result">📋 Lista Provisional: ${hasProvisionalLink ? '✅ Disponível' : '❌ Indisponível'}</div>`;
+                    analysis += `<div class="result">✅ Lista Definitiva: ${hasDefinitiveLink ? '✅ Disponível' : '❌ Indisponível'}</div>`;
+                }
+
+                analysis += `<div class="result"><strong>Primeiros 500 caracteres da página:</strong><br><pre>${pageContent.substring(0, 500)}...</pre></div>`;
+
+                resultDiv.innerHTML = analysis;
+
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Erro na análise: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+
+</html>

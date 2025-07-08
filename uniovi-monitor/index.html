@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor UniOvi - Listas de Admissão</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Monitor UniOvi</h1>
+            <p>Monitorando listas de admissão do Programa de Doctorado UniOvi</p>
+        </header>
+
+        <div class="status-panel">
+            <div class="status-indicator">
+                <span id="status-text">Conectando...</span>
+                <div id="status-dot" class="status-dot connecting"></div>
+            </div>
+            <div class="last-update">
+                <span>Última atualização: </span>
+                <span id="last-update-time">--</span>
+            </div>
+        </div>
+
+        <div class="content-panel">
+            <div class="program-info">
+                <h2>📚 Programa de Doctorado en Género y Diversidad
+                </h2>
+                <div class="lists-container">
+                    <div class="list-item">
+                        <h3>📋 Lista Provisional</h3>
+                        <div id="provisional-status" class="status-box">
+                            <span class="status-label">Status:</span>
+                            <span id="provisional-text" class="status-text">Verificando...</span>
+                        </div>
+                    </div>
+
+                    <div class="list-item">
+                        <h3>✅ Lista Definitiva</h3>
+                        <div id="definitive-status" class="status-box">
+                            <span class="status-label">Status:</span>
+                            <span id="definitive-text" class="status-text">Verificando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="refresh-info">
+            <p>🔄 Atualização automática a cada 100 segundos</p>
+            <button id="refresh-btn" class="refresh-button">Atualizar Agora</button>
+            <div class="debug-info">
+                <p><small>💡 Abra o console do navegador (F12) para ver logs detalhados</small></p>
+            </div>
+        </div>
+
+        <div class="error-panel" id="error-panel" style="display: none;">
+            <h3>⚠️ Erro de Conexão</h3>
+            <p id="error-message"></p>
+        </div>
+    </div>
+
+    <script src="monitor.js"></script>
+</body>
+
+</html>
