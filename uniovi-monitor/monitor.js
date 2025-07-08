@@ -142,11 +142,7 @@ class UniOviMonitor {
             // Parsear o HTML
             const parser = new DOMParser();
             
-            // Debug: verificar a estrutura dos dados
-            console.log('🔍 Data structure:', typeof data);
-            console.log('🔍 Data contents:', data);
-            
-            // Tentar diferentes formas de acessar o conteúdo
+            // Acessar o conteúdo HTML
             let htmlContent = '';
             if (typeof data === 'string') {
                 htmlContent = data;
@@ -156,51 +152,20 @@ class UniOviMonitor {
                 htmlContent = JSON.stringify(data);
             }
             
-            console.log('🔍 HTML content to parse:', htmlContent.substring(0, 500));
-            
             const doc = parser.parseFromString(htmlContent, 'text/html');
-            
-            // Debug: verificar se o parsing funcionou
-            console.log('🔍 HTML parsing result:', doc);
-            console.log('📄 Document body:', doc.body);
-            
-            // Verificar se o body existe e tem conteúdo
-            if (doc.body && doc.body.textContent) {
-                console.log('📝 Page content preview:', doc.body.textContent.substring(0, 500));
-            } else {
-                console.log('❌ Document body is null or has no textContent');
-                console.log('🔍 Document structure:', doc.documentElement);
-            }
             
             // Procurar pelo programa específico
             const programText = 'Programa de Doctorado en Género y Diversidad';
             const provisionalText = 'Lista provisional de admitidos, en espera y excluidos';
             const definitiveText = 'Lista definitiva de admitidos , en espera y excluidos';
             
-            // Verificar se o programa existe na página
+            // Verificar se o programa existe na página (tanto no texto quanto no HTML)
             const pageContent = doc.body ? doc.body.textContent : '';
-            const hasProgram = pageContent.includes(programText);
+            let hasProgram = pageContent.includes(programText);
             
-            console.log('🔍 Program found in page content:', hasProgram);
-            if (hasProgram) {
-                console.log('✅ Program text found in page');
-            } else {
-                console.log('❌ Program text NOT found in page');
-                console.log('🔍 Searching for partial matches...');
-                const partialMatches = pageContent.match(/Programa de Doctorado.*Género.*Diversidad/gi);
-                console.log('🔍 Partial matches found:', partialMatches);
-                
-                // Fallback: procurar diretamente no HTML bruto
-                console.log('🔍 Trying fallback search in raw HTML...');
-                const rawHtmlSearch = htmlContent.includes(programText);
-                console.log('🔍 Program found in raw HTML:', rawHtmlSearch);
-                
-                if (rawHtmlSearch) {
-                    console.log('✅ Program found in raw HTML - using fallback method');
-                    // Usar o HTML bruto para a busca
-                    hasProgram = true;
-                    pageContent = htmlContent;
-                }
+            // Se não encontrou no texto, tentar no HTML bruto
+            if (!hasProgram) {
+                hasProgram = htmlContent.includes(programText);
             }
             
             if (hasProgram) {
@@ -251,6 +216,23 @@ class UniOviMonitor {
                             }
                         }
                         break; // Encontrou o programa, pode parar de procurar
+                    }
+                }
+                
+                // Se não encontrou o programa na estrutura DOM, tentar busca no HTML bruto
+                if (!hasProvisionalLink && !hasDefinitiveLink) {
+                    console.log('🔍 Tentando busca alternativa no HTML bruto...');
+                    
+                    // Procurar por padrões específicos no HTML
+                    const provisionalPattern = /Programa de Doctorado en Género y Diversidad[^<]*<ul[^>]*>[^<]*<li[^>]*>Lista provisional de admitidos, en espera y excluidos<\/li>/gi;
+                    const definitivePattern = /Programa de Doctorado en Género y Diversidad[^<]*<ul[^>]*>[^<]*<li[^>]*>Lista definitiva de admitidos , en espera y excluidos<\/li>/gi;
+                    
+                    if (provisionalPattern.test(htmlContent)) {
+                        console.log('📋 Lista provisional encontrada no HTML bruto');
+                    }
+                    
+                    if (definitivePattern.test(htmlContent)) {
+                        console.log('📋 Lista definitiva encontrada no HTML bruto');
                     }
                 }
                 

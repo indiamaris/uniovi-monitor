@@ -1,0 +1,26 @@
+{
+  "name": "uniovi-monitor",
+  "version": "1.0.0",
+  "description": "Monitor for UniOvi admission lists",
+  "main": "index.html",
+  "scripts": {
+    "start": "firebase serve",
+    "build": "echo 'No build step required for static files'",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting"
+  },
+  "keywords": [
+    "monitor",
+    "university",
+    "admission",
+    "lists"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
