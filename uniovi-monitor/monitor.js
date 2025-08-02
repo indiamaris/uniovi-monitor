@@ -1,7 +1,7 @@
 class UniOviMonitor {
     constructor() {
         this.targetUrl = 'https://cei.uniovi.es/postgrado/doctorado/acceso/listas';
-        this.refreshInterval = 100000; // 100 seconds
+        this.refreshInterval = 130000; // 100 seconds
         this.intervalId = null;
         this.isMonitoring = false;
         
@@ -238,13 +238,13 @@ class UniOviMonitor {
                 
                 // Atualizar status das listas
                 if (hasProvisionalLink) {
-                    this.updateListStatus('provisional-text', 'available', 'Disponível (Link)');
+                    this.updateListStatus('provisional-text', 'available', 'Disponível ');
                 } else {
                     this.updateListStatus('provisional-text', 'unavailable', 'Indisponível');
                 }
                 
                 if (hasDefinitiveLink) {
-                    this.updateListStatus('definitive-text', 'available', 'Disponível (Link)');
+                    this.updateListStatus('definitive-text', 'available', 'Disponível )');
                 } else {
                     this.updateListStatus('definitive-text', 'unavailable', 'Indisponível');
                 }
