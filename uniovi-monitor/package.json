@@ -1,0 +1,31 @@
+{
+  "name": "uniovi-monitor",
+  "version": "1.0.0",
+  "description": "Monitor automático para listas de admissão da Universidade de Oviedo",
+  "main": "index.html",
+  "scripts": {
+    "start": "firebase serve",
+    "dev": "firebase serve --port 8000",
+    "build": "echo 'Build completed - static files ready'",
+    "deploy": "firebase deploy --only hosting",
+    "deploy:prod": "firebase deploy --only hosting --project uniovi-monitor",
+    "serve": "firebase serve --only hosting",
+    "setup": "firebase init hosting"
+  },
+  "keywords": [
+    "monitor",
+    "uniovi",
+    "admission",
+    "lists",
+    "university",
+    "firebase"
+  ],
+  "author": "UniOvi Monitor",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^12.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 

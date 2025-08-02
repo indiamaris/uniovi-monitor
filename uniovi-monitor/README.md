@@ -2,28 +2,71 @@
 
 Monitor automático para verificar a disponibilidade das listas de admissão do Programa de Doctorado en Género y Diversidad da Universidade de Oviedo.
 
-## 🚀 Como Usar
+## 🚀 Deploy no Firebase
 
-1. **Abrir o monitor:**
-   ```bash
-   # Navegue até a pasta do projeto
-   cd uniovi-monitor
-   
-   # Inicie um servidor local (Python 3)
-   python3 -m http.server 8000
-   
-   # Ou use qualquer servidor web local
-   ```
+Este projeto está configurado para deploy no Firebase Hosting.
 
-2. **Acesse no navegador:**
-   ```
-   http://localhost:8000
-   ```
+### 🔥 Deploy Rápido
 
-3. **Para testar a conexão:**
-   ```
-   http://localhost:8000/test-connection.html
-   ```
+```bash
+# Instalar dependências
+npm install
+
+# Deploy para Firebase
+./deploy-firebase.sh deploy
+
+# Ou usar npm
+npm run deploy
+```
+
+### 🔧 Configuração Inicial
+
+```bash
+# Configurar Firebase (primeira vez)
+./deploy-firebase.sh setup
+
+# Fazer login no Firebase
+firebase login
+
+# Inicializar projeto
+firebase init hosting
+```
+
+### 📦 Scripts Disponíveis
+
+```bash
+# Servidor local
+./deploy-firebase.sh serve
+
+# Deploy para staging
+./deploy-firebase.sh deploy
+
+# Deploy para produção
+./deploy-firebase.sh deploy:prod
+
+# Ver status do projeto
+./deploy-firebase.sh status
+
+# Ver logs
+./deploy-firebase.sh logs
+```
+
+### 🌐 Acesso Online
+
+Após o deploy, o app estará disponível em:
+```
+https://uniovi-monitor.web.app
+```
+
+### 🔧 Desenvolvimento Local
+
+```bash
+# Servidor local com Firebase
+npm run serve
+
+# Ou
+firebase serve --only hosting --port 8000
+```
 
 ## 🔧 Funcionalidades
 
@@ -118,6 +161,45 @@ this.targetUrl = 'https://cei.uniovi.es/postgrado/doctorado/acceso/listas';
 
 - **Compatibilidade:** Funciona em todos os navegadores modernos
 - **Requisitos:** Apenas um servidor web local (sem dependências externas)
+
+## 🔥 Firebase Hosting
+
+### 📁 Estrutura de Arquivos
+
+```
+uniovi-monitor/
+├── firebase.json          # Configuração do Firebase
+├── .firebaserc           # Configuração do projeto
+├── package.json          # Dependências e scripts
+├── deploy-firebase.sh    # Script de deploy
+├── index.html           # Página principal
+├── monitor.js           # Lógica do monitor
+├── styles.css           # Estilos
+└── test-connection.html # Página de teste
+```
+
+### ⚙️ Configuração Firebase
+
+- **Hosting:** Configurado para servir arquivos estáticos
+- **Cache:** Otimizado para performance
+- **Headers:** Configurados para segurança
+- **Rewrites:** Configurados para SPA
+
+### 🚀 Comandos Firebase
+
+```bash
+# Verificar status
+firebase projects:list
+
+# Deploy
+firebase deploy --only hosting
+
+# Servidor local
+firebase serve --only hosting
+
+# Ver logs
+firebase hosting:channel:list
+```
 
 ## 🆘 Suporte
 
